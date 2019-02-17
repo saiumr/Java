@@ -6,7 +6,7 @@
 
 首先来看看继承图:
 
-![1](/Users/visualgmq/Documents/program/Java8/basic_syntax/Collection/1.png)
+![1](./1.png)
 
 总共的接口，不算上Iterator迭代器系列的，其实就只有Collection,Map,List,Set和Queue。其中Collection是所有容器的根接口，List,Set,Queue和Map都是继承它的。然后List接口又有ArrayList(顺序表)和LinkedList(链表)，Map有HashMap(哈希表)和TreeMap。
 
