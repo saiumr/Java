@@ -1,0 +1,135 @@
+时刻牢记引用类型的改变是指向改变,指向了一个新开辟的内存空间,这里存放着我们给的值
+
+方法名相同，但各自的参数不同，称为方法重载（Overload）
+方法重载的目的是，功能类似的方法使用同一名字，更容易记住，因此，调用起来更简单
+
+举个例子，String类提供了多个重载方法indexOf()，可以查找子串：
+int indexOf(int ch)：根据字符的Unicode码查找；
+int indexOf(String str)：根据字符串查找；
+int indexOf(int ch, int fromIndex)：根据字符查找，但指定起始位置；
+int indexOf(String str, int fromIndex)根据字符串查找，但指定起始位置。
+
+继承:
+在OOP的术语中，我们把Person称为超类（super class），父类（parent class），基类（base class），把Student称为子类（subclass），扩展类（extended class）。
+
+详情见Ejicheng.java
+
+注意到我们在定义Person的时候，没有写extends。在Java中，没有明确写extends的类，编译器会自动加上extends Object。所以，任何类，除了Object，都会继承自某个类。
+
+Person、Student的继承树:
+Object <-- Person <-- Student
+
+父类中任何private字段和方法不能被子类或者子类的子类调用,改为protected即可
+
+在Java中，任何class的构造方法，第一行语句必须是调用父类的构造方法。
+如果没有明确地调用父类的构造方法，编译器会帮我们自动加一句super();
+
+如果父类没有默认(即只有自己写的带参数的)的构造方法，子类就必须显式调用super()并给出参数以便让编译器定位到父类的一个合适的构造方法。
+
+这里还顺带引出了另一个问题：即子类不会继承任何父类的构造方法。子类默认的构造方法是编译器自动生成的，不是继承的。
+
+
+向上转型和向下转型:
+转型问题记住一句话:父类引用指向子类实例对象
+看这个:https://www.cnblogs.com/xiaoyezideboke/p/10939219.html
+下面的记的太复杂
+
+总结：(来自上方的博客)
+1、父类引用指向子类对象，而子类引用不能指向父类对象。
+
+2、把子类对象直接赋给父类引用叫upcasting向上转型，向上转型不用强制转换，如：
+Father f1 = new Son();
+
+3、把指向子类对象的父类引用赋给子类引用叫向下转型(downcasting)，要强制转换，如：
+f1 就是一个指向子类对象的父类引用。把f1赋给子类引用 s1 即 Son s1 = (Son)f1;
+其中 f1 前面的(Son)必须加上，进行强制转换。
+
+向上转型时对象会遗失除了与父类对象共有的其他方法,但是重写的函数不会因为向上转型而丢失(涉及到多态)
+可以用向下转型在重新转回，这个和向上转型的作用要结合理解。
+
+多态存在的三个必要条件
+继承
+重写
+父类引用指向子类对象
+
+Person p = new Student();
+把一个子类类型安全地变为父类类型的赋值，被称为向上转型（upcasting）
+
+Person p1 = new Student(); // upcasting, ok
+Person p2 = new Person();
+Student s1 = (Student) p1; // ok
+Student s2 = (Student) p2; // runtime error! ClassCastException!
+向下转型的时候，把p1转型为Student会成功，因为p1确实指向Student实例
+把p2转型为Student会失败，因为p2的实际类型是Person，不能把父类变为子类，因为子类功能比父类多，多的功能无法凭空变出来。
+
+为了避免向下转型出错，Java提供了instanceof操作符，可以先判断一个实例究竟是不是某种类型
+Person p = new Person();
+System.out.println(p instanceof Person); // true
+System.out.println(p instanceof Student); // false
+
+Student s = new Student();
+System.out.println(s instanceof Person); // true
+System.out.println(s instanceof Student); // true
+
+Student n = null;
+System.out.println(n instanceof Student); // false
+
+instanceof实际上判断一个变量所指向的实例是否是指定类型，或者这个类型的子类。
+如果一个引用变量为null，那么对任何instanceof的判断都为false。
+
+从Java 14开始，判断instanceof后，可以直接转型为指定变量，避免再次强制转型。例如，对于以下代码：
+
+Object obj = "hello";
+if (obj instanceof String) {
+    String s = (String) obj;
+    System.out.println(s.toUpperCase());
+}
+
+改写如下:
+public class Main {
+    public static void main(String[] args) {
+        Object obj = "hello";
+        if (obj instanceof String s) {
+            // 可以直接使用变量s:
+            System.out.println(s.toUpperCase());
+        }
+    }
+}
+
+
+组合:
+具有has关系不应该使用继承，而是使用组合，即Student可以持有一个Book实例：
+class Student extends Person {
+    protected Book book; // Book为类名,book为实例
+    protected int score;
+}
+因此，继承是is关系，组合是has关系 
+
+方法签名:方法签名由方法名称和一个参数列表（方法的参数的顺序和类型）组成。
+在子类中若有方法签名与返回值与父类均相同的方法,称为重写(Override)
+一般在方法名上加上一个@Override便于编译器检查
+
+用super调用父类方法
+用final修饰的字段和方法不能被重写
+可以在构造方法中初始化final字段：
+class Person {
+    public final String name;
+    public Person(String name) {
+        this.name = name;
+    }
+}
+
+
+抽象类：
+面向抽象编程的本质就是：
+上层代码只定义规范（例如：abstract class Person）；
+不需要子类就可以实现业务逻辑（正常编译）；
+具体的业务逻辑由不同的子类实现，调用者并不关心。
+
+Java的接口（interface）定义了纯抽象规范，一个类可以实现多个接口；
+接口也是数据类型，适用于向上转型和向下转型；
+接口的所有方法都是抽象方法，接口不能定义实例字段；
+接口可以定义default方法（JDK>=1.8）。
+JDK1.8中为了加强接口的能力，使得接口可以存在具体的方法，前提是方法需要被default或static关键字所修饰。
+default方法的作用：https://blog.csdn.net/SnailMann/article/details/80231593
+
